@@ -1,0 +1,160 @@
+
+<!-- Include meta tag to ensure proper rendering and touch zooming -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Include jQuery Mobile stylesheets -->
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+
+<!-- Include the jQuery library -->
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script src="/socket.io/socket.io.js"></script>
+
+
+<!-- Include the jQuery Mobile library -->
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+
+
+
+<script>
+	var socket = io.connect('http://localhost:8080');
+	
+	//function to get the cookie
+	function getCookie(name)
+	{
+		var re = new RegExp(name + "=([^;]+)");
+		var value = re.exec(document.cookie);
+		return (value != null) ? unescape(value[1]) : null;
+	}
+	
+	// assigns the cookie value to 'displayName'
+	var displayName = getCookie("username");
+	
+	window.onload = function(){
+		console.log("Page loaded");	
+		
+		console.log(document.cookie);
+		
+		if (displayName == null) {
+		$( "#namePopup" ).popup( "open" );
+		}
+		else if (displayName.length == 0) {
+		$( "#namePopup" ).popup( "open" );
+		}
+		else {
+		socket.emit('adduser', displayName);
+		document.getElementById("displayName").innerHTML = displayName;
+		}
+	};
+	function getName() {
+		var fName = document.getElementById("firstName").value;
+		// stores the name as a cookie
+		document.cookie = "username="+fName+"; expires=Wed, 25 Dec 2066 12:00:00 UTC; path=/";
+		document.getElementById("displayName").innerHTML = fName;
+		// call the server-side function 'adduser' and send one parameter (value of prompt)
+		socket.emit('adduser', fName);
+	}
+	
+	function newQuestion() {
+		$( "#questionPopup" ).popup( "open" );
+		
+		
+	}
+	
+	function createQuestion() {
+		var questionTitle = document.getElementById("question").value;
+		socket.emit('create', questionTitle);
+		$('#rooms').append('<div>' + question + '</div>');
+		}
+		
+	// on connection to server, ask for user's name with an anonymous callback
+	socket.on('connect', function(){
+		
+	});
+
+	// listener, whenever the server emits 'updatechat', this updates the chat body
+	socket.on('updatechat', function (username, data) {
+		$('#conversation').append('<b>'+username + ':</b> ' + data + '<br>');
+	});
+
+	// listener, whenever the server emits 'updaterooms', this updates the room the client is in
+	socket.on('updaterooms', function(rooms, current_room) {
+		$('#rooms').empty();
+		
+		$.each(rooms, function(key, value) {
+			if(value == current_room){
+				$('#rooms').append('<div>' + value + '</div>');
+			}
+			else {
+				$('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+			}
+		});
+	});
+
+	function switchRoom(room){
+	$('#conversation').empty();
+		socket.emit('switchRoom', room);
+	}
+	
+	// on load of page
+	$(function(){
+		// when the client clicks SEND
+		$('#datasend').click( function() {
+			var message = $('#data').val();
+			$('#data').val('');
+			// tell server to execute 'sendchat' and send along one parameter
+			socket.emit('sendchat', message);
+		});
+
+		// when the client hits ENTER on their keyboard
+		$('#data').keypress(function(e) {
+			if(e.which == 13) {
+				$(this).blur();
+				$('#datasend').focus().click();
+			}
+		});
+	});
+	
+</script>
+<body>
+<div data-role="page">
+	<div data-role="header">
+		<h1 id="mainID">Ask Away!</h1>
+		<h1 id="displayName"></h1>
+		<button onclick="newQuestion()" class="ui-btn ui-btn-block ui-corner-all ui-icon-edit ui-btn-icon-left">New Question</button>
+	</div>
+	<div data-role="popup" id="namePopup" data-dismissible="false" data-overlay-theme="b" data-transition="slideup" class="ui-content" >
+	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+		<h3 class="centerText">Enter your first name</h3>
+
+			<form>
+				<input type="text" id="firstName" class="centerText"/>
+				<button type="submit" onClick="getName()">Start Asking!</button>
+			</form>
+
+	</div>
+	<div data-role="popup" id="questionPopup"  data-dismissible="false" data-overlay-theme="b" class="ui-content" data-position-to="origin">
+	<a href="#"  data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right" data-position-to="origin">Close</a>
+		<h3 class="centerText">Ask a new question</h3>
+
+			<form>
+				<input type="text" id="question" class="centerText"/>
+				<button type="submit" onClick="createQuestion()">Ask!</button>
+			</form>
+
+	</div>
+
+	<div data-role="main" class="ui-content">
+		<div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
+			<b>ROOMS</b>
+			<div id="rooms"></div>
+		</div>
+		<div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
+			<div id="conversation"></div>
+			<input id="data" style="width:200px;" />
+			<input type="button" data-icon="carat-r" id="datasend" value="Send"/>
+		</div>
+	</div>
+</div>
+</body>
