@@ -51,18 +51,6 @@
 		document.getElementById("displayName").innerHTML = displayName;
 		}
 	};
-	
-	$(document).ready(function(){
-    if (screen.width < 724){
-        document.getElementById("new").innerHTML = "New";
-		document.getElementById("answer").innerHTML = "Answer";
-		document.getElementById("browse").innerHTML = "Browse";
-    }
-    else {
-        
-    }
-});
-	
 	function getName() {
 		var fName = document.getElementById("firstName").value;
 		// stores the name as a cookie
@@ -134,48 +122,7 @@
 	
 </script>
 <body>
-
-<div data-role="page" id="home">
-	<div data-role="header">
-		<h1 id="mainID">Ask Away!</h1>
-		<h1 id="displayName"></h1>
-	</div>
-	<div data-role="popup" id="namePopup" data-dismissible="false" data-overlay-theme="b" data-transition="slideup" class="ui-content" >
-	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-		<h3 class="centerText">Enter your first name</h3>
-
-			<form>
-				<input type="text" id="firstName" class="centerText"/>
-				<button type="submit" onClick="getName()">Start Asking!</button>
-			</form>
-
-	</div>
-	<div data-role="popup" id="questionPopup"  data-dismissible="false" data-overlay-theme="b" class="ui-content" data-position-to="origin">
-	<a href="#"  data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn ui-icon-delete ui-btn-icon-notext ui-btn-right" data-position-to="origin">Close</a>
-		<h3 class="centerText">Ask a new question</h3>
-
-			<form>
-				<input type="text" id="question" class="centerText"/>
-				<button type="submit" onClick="createQuestion()">Ask!</button>
-			</form>
-
-	</div>
-
-	<div data-role="main" class="ui-content">
-	<div class="ui-grid-b">
-		<div class="ui-block-a">
-			<button id="new" onclick="newQuestion()" class="ui-btn  ui-corner-all ui-icon-edit ui-btn-icon-left">New Question</button>
-		</div>
-		<div class="ui-block-b">
-			<a href="#chat"><button id="answer" class="ui-btn  ui-corner-all ui-icon-comment ui-btn-icon-left">Answer a Question</button></a>
-		</div>
-		<div class="ui-block-c">
-			<a href="#chat"><button id="browse" class="ui-btn  ui-corner-all ui-icon-search ui-btn-icon-left">Browse Old Questions</button></a>
-		</div>
-	</div>
-</div>
-
-<div data-role="page" id="chat">
+<div data-role="page">
 	<div data-role="header">
 		<h1 id="mainID">Ask Away!</h1>
 		<h1 id="displayName"></h1>
@@ -214,7 +161,4 @@
 		</div>
 	</div>
 </div>
-
-
-
 </body>

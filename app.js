@@ -3,6 +3,8 @@ var express = require('express')
   , http = require('http')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server);
+  
+var uuid = require('node-uuid');
 
 server.listen(8080);
 console.log("Server listening on port 8080");
@@ -17,6 +19,17 @@ var usernames = {};
 
 // rooms which are currently available in chat
 var rooms = ['room1','room2','room3'];
+
+// generates random six character key
+function genID()
+{
+	var text = "";
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	
+	for(var i=0; i<5; i++)
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	return text;
+}
 
 io.sockets.on('connection', function (socket) {
 	
@@ -39,6 +52,8 @@ io.sockets.on('connection', function (socket) {
 	
 	// creates new question (room)
 	socket.on('create', function(question) {
+		var roomID = genID();
+		console.log(roomID);
 		rooms.push(question);
 		socket.join(question);
 		socket.emit('updatechat', 'SERVER', 'Connected to ' + question);
