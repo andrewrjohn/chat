@@ -10,5 +10,9 @@ Very rough UI.
 
 Functionality:
 1. Create User
+  Caches name in browser (added)
 2. Join Chat room
-3. Create new chat room
+  Wipes chat log when switching rooms (added)
+3. Create new chat room (added)
+  Can create new room, which automatically joins you to that room once created. Room name also appears on sidebar
+
